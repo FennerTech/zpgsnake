@@ -1,5 +1,5 @@
 <!-- -----------------------------------------------
-ZPG-Snake v1.14
+ZPG-Snake v1.15
 (c) 2024 Marco Fenner
 
 Urheberrechtlich geschützt.
@@ -14,25 +14,24 @@ Danke und Viel Spaß!
     <meta charset="UTF-8">
     
     <!-- Meta-Tags für SEO -->
-<meta name="description" content="ZPG-Snake v1.14 - Ein unterhaltsames Zero-Player-Game von Marco Fenner">
-<meta name="keywords" content="Snake, Zero-Player-Game, Javascript, HTML5, Spiel, ZPG-Snake, Marco Fenner">
-<meta name="robots" content="index, follow">
-<meta name="author" content="Marco Fenner">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ZPG-Snake v1.15 - Ein unterhaltsames Zero-Player-Game von Marco Fenner">
+    <meta name="keywords" content="Snake, Zero-Player-Game, Javascript, HTML5, Spiel, ZPG-Snake, Marco Fenner">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Marco Fenner">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Open Graph Meta Tags -->
-<meta property="og:title" content="ZPG-Snake v1.14 - Ein Zero-Player-Game von Marco Fenner">
-<meta property="og:description" content="Spielen Sie ein innovatives Zero-Player-Game. Keine Interaktion notwendig, alles läuft automatisch!">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://fennertech.github.io/zpgsnake/">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ZPG-Snake v1.15 - Ein Zero-Player-Game von Marco Fenner">
+    <meta property="og:description" content="Spielen Sie ein innovatives Zero-Player-Game. Keine Interaktion notwendig, alles läuft automatisch!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fennertech.github.io/zpgsnake/">
 
-<!-- Twitter Card Meta Tags -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ZPG-Snake v1.14">
-<meta name="twitter:description" content="Ein innovatives Zero-Player-Game. Spielen Sie Snake ganz ohne Eingabe!">
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ZPG-Snake v1.15">
+    <meta name="twitter:description" content="Ein innovatives Zero-Player-Game. Spielen Sie Snake ganz ohne Eingabe!">
 
-
-    <title>ZPG-Snake v1.14</title>
+    <title>ZPG-Snake v1.15</title>
     <link rel="icon" href="favicon.png" type="image/png">
 
     <style>
@@ -247,7 +246,7 @@ Danke und Viel Spaß!
 
             ctx.fillStyle = 'lightgreen';
             ctx.font = '27px Arial';
-            ctx.fillText('ZPG-Snake v1.14', 10, 30);
+            ctx.fillText('ZPG-Snake v1.15', 10, 30);
 
             ctx.fillStyle = 'white';
             ctx.font = '14px Arial';
@@ -280,10 +279,11 @@ Danke und Viel Spaß!
             if (head.x < 0) head.x = maxX - 1;
             if (head.y < 0) head.y = maxY - 1;
 
-            for (let part of snake) {
-                if (part.x === head.x && part.y === head.y) {
+            // Überprüfen, ob die Schlange gegen sich selbst stößt
+            for (let i = 1; i < snake.length; i++) {
+                if (snake[i].x === head.x && snake[i].y === head.y) {
                     if (snake.length > 1) {
-                        snake.pop();
+                        snake.pop();  // Schlange um 1 Element kürzen
                         changeDirectionAfterCollision();
                     }
                     return;
@@ -358,7 +358,7 @@ Danke und Viel Spaß!
                 return !snake.some(part => part.x === newHead.x && part.y === newHead.y);
             });
             if (safeDirections.length > 0) {
-                direction = safeDirections[Math.floor(Math.random() * possibleDirections.length)];
+                direction = safeDirections[Math.floor(Math.random() * safeDirections.length)];
             }
         }
 
@@ -464,4 +464,3 @@ Danke und Viel Spaß!
     </script>
 </body>
 </html>
-
