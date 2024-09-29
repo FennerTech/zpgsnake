@@ -1,0 +1,467 @@
+<!-- -----------------------------------------------
+ZPG-Snake v1.14
+(c) 2024 Marco Fenner
+
+Urheberrechtlich geschützt.
+Kopieren erlaubt.
+Verändern nur mit Namensnennung des Autors ;-)
+Danke und Viel Spaß!
+------------------------------------------------ -->
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Meta-Tags für SEO -->
+<meta name="description" content="ZPG-Snake v1.14 - Ein unterhaltsames Zero-Player-Game von Marco Fenner">
+<meta name="keywords" content="Snake, Zero-Player-Game, Javascript, HTML5, Spiel, ZPG-Snake, Marco Fenner">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Marco Fenner">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:title" content="ZPG-Snake v1.14 - Ein Zero-Player-Game von Marco Fenner">
+<meta property="og:description" content="Spielen Sie ein innovatives Zero-Player-Game. Keine Interaktion notwendig, alles läuft automatisch!">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fennertech.github.io/zpgsnake/">
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ZPG-Snake v1.14">
+<meta name="twitter:description" content="Ein innovatives Zero-Player-Game. Spielen Sie Snake ganz ohne Eingabe!">
+
+
+    <title>ZPG-Snake v1.14</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #gameContainer {
+            position: relative;
+            width: 90vw;
+            height: 90vh;
+        }
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            border: 1px solid white;
+            background-color: black;
+        }
+        #resetButton, #infoButton {
+            position: absolute;
+            background-color: red;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        #resetButton {
+            top: 10px;
+            right: 10px;
+        }
+        #infoButton {
+            top: 50px;
+            right: 10px;
+            background-color: buttonface;
+            color: black;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+        }
+        #modal, #infoModal, #cookieModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #modalContent, #infoModalContent, #cookieModalContent {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            position: relative;
+            border: 2px solid lightgray;
+        }
+        #infoModalContent {
+            width: 60%;
+            height: 60%;
+            overflow-y: auto;
+            text-align: left;
+        }
+        #modalContent button, #infoModalContent button, #cookieModalContent button {
+            margin: 10px;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #closeInfo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #playerStats {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: lightgray;
+            font-size: 14px;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <script language="JavaScript" src="https://www.besucherzaehler-kostenlos.de/js/counter.js.php?count=1&id=fennertech.github.iozpgsnake&start=&design=6"></script>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <button id="resetButton">X</button>
+        <button id="infoButton">i</button>
+        <div id="playerStats">
+            Spieler online: <span class="BZonline"></span> | Spieler heute: <span class="BZheute"></span> | Spieler gestern: <span class="BZgestern"></span> | Spieler gesamt: <span class="BZgesamt"></span> ( seit: <span class="BZseit"></span> )
+        </div>
+    </div>
+
+    <div id="modal">
+        <div id="modalContent">
+            <p>Möchten Sie das Spiel zurücksetzen?</p>
+            <button id="confirmReset">Ja</button>
+            <button id="cancelReset">Nein</button>
+        </div>
+    </div>
+
+    <div id="infoModal">
+        <div id="infoModalContent">
+            <button id="closeInfo">X</button>
+            <div id="infoContent">
+                <h2>Impressum</h2>
+        <p><strong>Angaben gemäß § 5 TMG</strong></p>
+        <p><strong>Betreiber der Website:</strong><br> Marco Fenner<br> Wiardastraße 19<br> 26603 Aurich<br> Deutschland</p>
+        <p><strong>Kontakt:</strong><br> E-Mail: <a href="mailto:datenschrauber@posteo.de">datenschrauber@posteo.de</a><br> Telefon: +49 1573 004 2105</p>
+        <p><strong>Vielen Dank für den Besuch meiner Website.<br>Wenn Sie Ihnen gefallen hat, würde ich mich über eine kurze Nachricht sehr freuen.</strong> 😊</p>
+
+        <h3>Haftungsausschluss:</h3>
+        <p><strong>Haftung für Inhalte</strong><br> Als Diensteanbieter bin ich gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG bin ich als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werde ich diese Inhalte umgehend entfernen.</p>
+
+        <p><strong>Haftung für Links</strong><br> Mein Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss habe. Deshalb kann ich für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werde ich derartige Links umgehend entfernen.</p>
+
+        <p><strong>Urheberrecht</strong><br> Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitte ich um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werde ich diese Inhalte umgehend entfernen.</p>
+
+        <h3>Datenschutz:</h3>
+        <p>Die Nutzung meiner Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf meinen Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben. Ich weise darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.</p>
+
+        <h3>Besucherzähler von besucherzaehler-kostenlos.de</h3>
+
+        <p>Diese Webseite verwendet einen externen Zähler, um die Anzahl der Webseitenaufrufe zu erfassen. Dafür wird ein Java-Script von einer externe Webseite geladen. Der Server von <a href="https://www.besucherzaehler-kostenlos.de">besucherzaehler-kostenlos.de</a> speichert die IP-Adresse des Zugriffs anonymisiert und zeitlich begrenzt in einer LOG-Datei ab. Diese wird regelmäßig unwiderruflich gelöscht.</p>
+
+        <p>Um die korrekte Funktionsweise des Zählers zu gewährleisten, speichert der Besucherzähler zudem einen sogenannten Session-Cookie auf dem Computer des Besuchers ab. Dieser wird in der Regel vom Browser gelöscht, sobald er geschlossen wird. In diesem Cookie werden keine persönlichen Informationen gespeichert. Er enthält lediglich die Information der aufgerufenen Domain, sowie einen boolschen Tag (true/false), um den Besucher als bereits gezählt zu markieren.</p>
+
+        <p>Es werden auch darüberhinaus keine persönlichen oder personenbezogenen Daten vom Besucherzähler erhoben. Eine Nachverfolgung oder Zuordnung der Zugriffe ist zu keiner Zeit möglich. Ein besonderer Dank geht an <a href="https://www.howtodocentral.com">www.howtodocentral.com</a>, durch dessen Unterstützung dieser kostenlose Service erst möglich gemacht wird.</p>
+
+        <h3>Einsehbarkeit des Quellcodes:</h3>
+        <p>Der Quellcode dieser Seite ist vollständig für jedermann einsehbar.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cookieModal">
+        <div id="cookieModalContent">
+            <p>Diese Seite verwendet Cookies. Stimmen Sie der Verwendung zu?</p>
+            <button id="acceptCookies">Annehmen</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetButton = document.getElementById('resetButton');
+        const infoButton = document.getElementById('infoButton');
+        const modal = document.getElementById('modal');
+        const confirmReset = document.getElementById('confirmReset');
+        const cancelReset = document.getElementById('cancelReset');
+        const infoModal = document.getElementById('infoModal');
+        const closeInfo = document.getElementById('closeInfo');
+        const cookieModal = document.getElementById('cookieModal');
+        const acceptCookies = document.getElementById('acceptCookies');
+
+        let tileSize = 20;
+        let snake = [{ x: 10, y: 10 }];
+        let direction = { x: 1, y: 0 };
+        let foods = [{ x: 15, y: 15 }, { x: 5, y: 5 }];
+        let score = 0;
+        let gameInterval;
+        let autoMoveInterval = 200;
+        let userInput = false;
+        let isUserControlled = false;
+        let lastFoodTime = Date.now();
+        const foodTimeout = 30000;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth * 0.9;
+            canvas.height = window.innerHeight * 0.9;
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function formatScore(num) {
+            return num.toLocaleString('de-DE', { useGrouping: true });
+        }
+
+        function draw() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'lightgreen';
+            ctx.font = '27px Arial';
+            ctx.fillText('ZPG-Snake v1.14', 10, 30);
+
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Arial';
+            ctx.fillText('Ein Zero-Player-Game von  ', 10, 60);
+            ctx.fillStyle = 'lightgreen';
+            ctx.fillText('Marco Fenner', ctx.measureText('Ein Zero-Player-Game von ').width + 10, 60);
+
+            ctx.fillStyle = 'white';
+            ctx.font = '32px Arial';
+            ctx.fillText(formatScore(score), 10, 100);
+
+            ctx.fillStyle = isUserControlled ? 'yellow' : 'lime';
+            snake.forEach(part => {
+                ctx.fillRect(part.x * tileSize, part.y * tileSize, tileSize, tileSize);
+            });
+
+            ctx.fillStyle = 'red';
+            foods.forEach(food => {
+                ctx.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize);
+            });
+        }
+
+        function update() {
+            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+            const maxX = Math.floor(canvas.width / tileSize);
+            const maxY = Math.floor(canvas.height / tileSize);
+            if (head.x >= maxX) head.x = 0;
+            if (head.y >= maxY) head.y = 0;
+            if (head.x < 0) head.x = maxX - 1;
+            if (head.y < 0) head.y = maxY - 1;
+
+            for (let part of snake) {
+                if (part.x === head.x && part.y === head.y) {
+                    if (snake.length > 1) {
+                        snake.pop();
+                        changeDirectionAfterCollision();
+                    }
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            let ateFood = false;
+            foods.forEach((food, index) => {
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    updateScore();
+                    placeFood(index);
+                    ateFood = true;
+                    lastFoodTime = Date.now();
+                }
+            });
+
+            if (!ateFood) {
+                snake.pop();
+            }
+
+            if (Date.now() - lastFoodTime > foodTimeout && foods.length < 3) {
+                placeFood(foods.length);
+                lastFoodTime = Date.now();
+            }
+        }
+
+        function placeFood(index) {
+            const maxX = Math.floor(canvas.width / tileSize);
+            const maxY = Math.floor(canvas.height / tileSize);
+            let newFood;
+            do {
+                newFood = {
+                    x: Math.floor(Math.random() * maxX),
+                    y: Math.floor(Math.random() * maxY)
+                };
+            } while (
+                snake.some(part => part.x === newFood.x && part.y === newFood.y) ||
+                foods.some((food, i) => i !== index && food.x === newFood.x && food.y === newFood.y)
+            );
+            foods[index] = newFood;
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+        }
+
+        function resetGame() {
+            score = 0;
+            updateScore();
+            snake = [{ x: 10, y: 10 }];
+            direction = { x: 1, y: 0 };
+            foods = [{ x: 15, y: 15 }, { x: 5, y: 5 }];
+            lastFoodTime = Date.now();
+            isUserControlled = false;
+            clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, autoMoveInterval);
+        }
+
+        function changeDirectionAfterCollision() {
+            const possibleDirections = [
+                { x: 0, y: -1 },
+                { x: 0, y: 1 },
+                { x: -1, y: 0 },
+                { x: 1, y: 0 }
+            ];
+            const safeDirections = possibleDirections.filter(dir => {
+                const newHead = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+                return !snake.some(part => part.x === newHead.x && part.y === newHead.y);
+            });
+            if (safeDirections.length > 0) {
+                direction = safeDirections[Math.floor(Math.random() * possibleDirections.length)];
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            userInput = true;
+            isUserControlled = true;
+            if (e.key === 'ArrowUp' && direction.y !== 1) {
+                direction = { x: 0, y: -1 };
+            } else if (e.key === 'ArrowDown' && direction.y !== -1) {
+                direction = { x: 0, y: 1 };
+            } else if (e.key === 'ArrowLeft' && direction.x !== 1) {
+                direction = { x: -1, y: 0 };
+            } else if (e.key === 'ArrowRight' && direction.x !== -1) {
+                direction = { x: 1, y: 0 };
+            }
+        });
+
+        setInterval(function () {
+            if (!userInput) {
+                isUserControlled = false;
+                let possibleDirections = [
+                    { x: 0, y: -1 },
+                    { x: 0, y: 1 },
+                    { x: -1, y: 0 },
+                    { x: 1, y: 0 }
+                ];
+                possibleDirections = possibleDirections.filter(dir => !(dir.x === -direction.x && dir.y === -direction.y));
+                direction = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+            }
+            userInput = false;
+        }, 3000);
+
+        function saveGame() {
+            const gameState = {
+                score: score,
+                snake: snake,
+                direction: direction,
+                foods: foods
+            };
+            localStorage.setItem('autoSnakeGameState', JSON.stringify(gameState));
+        }
+
+        function loadGame() {
+            const savedState = localStorage.getItem('autoSnakeGameState');
+            if (savedState) {
+                const gameState = JSON.parse(savedState);
+                score = gameState.score;
+                snake = gameState.snake;
+                direction = gameState.direction;
+                foods = gameState.foods;
+                updateScore();
+            }
+        }
+
+        window.addEventListener('beforeunload', saveGame);
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                saveGame();
+            } else {
+                loadGame();
+            }
+        });
+
+        function updateScore() {
+            draw();
+        }
+
+        resetButton.addEventListener('click', function () {
+            modal.style.display = 'flex';
+        });
+
+        confirmReset.addEventListener('click', function () {
+            modal.style.display = 'none';
+            resetGame();
+            localStorage.removeItem('autoSnakeGameState');
+        });
+
+        cancelReset.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        infoButton.addEventListener('click', function () {
+            infoModal.style.display = 'flex';
+        });
+
+        closeInfo.addEventListener('click', function () {
+            infoModal.style.display = 'none';
+        });
+
+        if (localStorage.getItem('cookiesAccepted') === 'true') {
+            cookieModal.style.display = 'none';
+        } else {
+            cookieModal.style.display = 'flex';
+        }
+
+        acceptCookies.addEventListener('click', function () {
+            localStorage.setItem('cookiesAccepted', 'true');
+            cookieModal.style.display = 'none';
+        });
+
+        loadGame();
+        gameInterval = setInterval(gameLoop, autoMoveInterval);
+    </script>
+</body>
+</html>
+
